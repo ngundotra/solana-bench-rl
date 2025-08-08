@@ -1,12 +1,12 @@
 {% include toc.html %}
 
-# Solana Gym: Teaching AI to Navigate DeFi Through Reinforcement Learning
+# Solana Bench: Benchmarking AI's Understanding of Blockchain
 
 ## Why We Built This
 
 Large Language Models have gotten remarkably good at writing code. But how do we actually measure their ability to understand and interact with complex systems like blockchains? Traditional benchmarks fall short when it comes to evaluating a model's capacity to compose transactions, understand protocol interactions, and navigate the intricate world of DeFi.
 
-Enter **Solana Gym** - a reinforcement learning environment where AI agents learn to interact with the Solana blockchain by discovering protocols and earning rewards for unique interactions. Think of it as a playground where models can demonstrate their understanding of blockchain protocols through action, not just code generation.
+Enter **Solana Bench** - a benchmarking framework where AI agents are evaluated on their ability to interact with the Solana blockchain by discovering protocols and earning rewards for unique interactions. Think of it as a test bench where models demonstrate their understanding of blockchain protocols through action, not just code generation.
 
 ## Our Best Discovery: The Code Loop Explorer
 
@@ -350,215 +350,7 @@ We're not testing if models know `solana-agent-kit` or `@coral-xyz/anchor`. We'r
 
 Every transaction either succeeds or fails. Every new instruction discovered adds to the score. There's no ambiguity in evaluation - the blockchain is the judge.
 
-## What We Need From the Community
 
-**Right now, we're basically just testing if models know @solana/web3.js.** That's not enough. We need YOUR help to build comprehensive evaluation suites for the entire Solana ecosystem.
-
-### 🎯 The Vision: Protocol-Specific Mini-Environments
-
-Every major protocol should have its own evaluation environment. Why? Because knowing how to transfer SOL is vastly different from understanding Kamino's lending markets or Drift's perpetuals.
-
-**What Protocols Should Submit**:
-
-1. **Custom System Prompts** with your protocol's concepts
-2. **SDK Integration Examples** showing real usage patterns
-3. **Reward Functions** that measure protocol mastery
-4. **Success Criteria** specific to your protocol
-
-### 🏗️ Protocol Environments We Need
-
-**DeFi Protocols** (each needs its own environment!):
-
-- **Kamino**: Test obligation management, multi-asset lending, leverage loops
-- **Drift**: Evaluate perpetuals trading, DLOB understanding, liquidations
-- **Phoenix**: Assess limit order placement, market making strategies
-- **Orca/Raydium**: Measure pool interaction, concentrated liquidity understanding
-- **Jupiter**: Test aggregation logic, route optimization
-
-**Infrastructure Protocols**:
-
-- **Metaplex**: NFT minting, metadata, collections
-- **Squads**: Multisig creation and management
-- **Pyth**: Oracle price feed integration
-
-### 🛠️ SDK Environments We Need
-
-Different SDKs have different abstractions. We need environments for each:
-
-**TypeScript/JavaScript**:
-
-- **@solana/kit**: Modern, composable Solana development
-- **@coral-xyz/anchor**: IDL-based program interactions
-- **@metaplex-foundation/js**: NFT-specific operations
-
-**Other Languages** (yes, we need these too!):
-
-- **Rust**: Native Solana program interactions
-- **Python**: solana-py, anchorpy ecosystems
-- **Go**: gagliardetto/solana-go patterns
-
-### 📝 Example: Kamino-Specific Environment
-
-Here's what a Kamino contribution might look like:
-
-```python
-class KaminoLendingExplorer(CodeLoopExplorer):
-    def get_system_prompt(self):
-        return f"""
-        You are exploring Kamino Lending Protocol.
-
-        Core Concepts:
-        - Obligations: User's borrow/lend positions
-        - Reserves: Lending pools for different assets
-        - kTokens: Receipt tokens for deposits
-
-        Available SDK: @kamino-finance/klend-sdk
-
-        Examples:
-        {self.load_kamino_examples()}
-        """
-
-    def calculate_reward(self, tx_info):
-        base_reward = super().calculate_reward(tx_info)
-
-        # Kamino-specific bonus rewards
-        if self.completed_deposit_borrow_repay_cycle():
-            base_reward += 10  # Full lending cycle bonus
-
-        if self.used_leverage_properly():
-            base_reward += 5   # Advanced feature bonus
-
-        if self.interacted_with_new_reserve():
-            base_reward += 3   # Exploration bonus
-
-        return base_reward
-```
-
-### 🎮 Why Protocol-Specific Rewards Matter
-
-Generic instruction discovery only tells part of the story. Protocol-specific rewards measure if models actually understand your protocol:
-
-**Kamino Rewards**:
-
-- Deposit → Borrow → Repay cycle = **Understanding lending**
-- Leverage loops = **Understanding capital efficiency**
-- Liquidation execution = **Understanding risk**
-
-**Drift Rewards**:
-
-- Open → Modify → Close position = **Understanding perps**
-- Place limit orders on DLOB = **Understanding orderbook**
-- Execute JIT liquidity = **Understanding MEV**
-
-**Phoenix Rewards**:
-
-- Place bid/ask spreads = **Understanding market making**
-- Cancel and replace orders = **Understanding order management**
-- Consume liquidity efficiently = **Understanding execution**
-
-### 🚀 The Multiplication Problem (Help Needed!)
-
-If we need:
-
-- **10 protocols** × **3 SDKs** × **3 languages** = **90 unique environments**
-
-...we're probably doing something wrong. This is a HUGE unsolved challenge that someone from the community could tackle.
-
-**What We've Tried**:
-
-- **program_ids.csv**: We tagged 100+ programs in `data/program_ids.csv` - but models struggle to use this effectively
-- **fetchTransactions**: Added to `simple_explorer.py` so models could learn from existing transactions - but it's fragile
-- **Generic exploration**: Works for System/Token programs, fails for complex protocols
-
-**What Might Work Better**:
-
-- **"Raw" Environments**: Force models to build everything from scratch with ONLY @solana/web3.js
-- **Auto-discovery from IDLs**: Automatically generate rewards from program IDLs
-- **Transaction Mining**: Learn protocol patterns from historical transactions
-- **Cross-protocol transfer**: Can knowledge of one DEX help with another?
-
-This is an open research problem. If you solve this, you've cracked protocol-agnostic evaluation.
-
-### 🔧 How to Build Your Protocol Environment
-
-1. **Fork our template**:
-
-```bash
-cp code_loop_explorer.py protocols/your_protocol_explorer.py
-```
-
-2. **Add your protocol's concepts**:
-
-- System prompts with your terminology
-- SDK examples from your docs
-- Common patterns and gotchas
-
-3. **Design reward functions**:
-
-- What indicates basic understanding?
-- What shows advanced mastery?
-- What would impress your protocol team?
-
-4. **Test with multiple models**:
-
-- Ensure it's not too easy or too hard
-- Verify rewards align with actual understanding
-
-5. **Submit your PR**:
-
-- Include sample runs
-- Document what your rewards measure
-- Explain why these metrics matter
-
-### 🔬 Open Research Challenge: Protocol-Agnostic Discovery
-
-The holy grail would be an environment where models can discover and interact with ANY protocol without protocol-specific prompts. Here's what makes this hard:
-
-**The Discovery Problem**:
-
-```python
-# We have this in data/program_ids.csv:
-"JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4", "Jupiter v6"
-"CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK", "Raydium CLMM"
-
-# But models can't figure out:
-# - What instructions these programs accept
-# - What accounts they need
-# - How to construct valid transactions
-```
-
-**Why fetchTransactions() Isn't Enough**:
-
-- Transactions show WHAT happened, not WHY
-- Account relationships are opaque without context
-- Instruction data is just bytes without an IDL
-
-**Dream Contribution**: A system that can:
-
-1. Take any program ID
-2. Fetch its IDL (if available) or reverse-engineer from transactions
-3. Generate exploration strategies
-4. Create meaningful rewards without human intervention
-
-**🔥 Concrete Research Ideas**
-
-**"Raw" Environment Challenge #1: Pure Discovery**
-Start with a raw environment using ONLY @solana/web3.js - no protocol SDKs allowed. Can a model figure out how to swap on Jupiter just from the program ID and fetched transactions? This tests true protocol understanding.
-
-**"Raw" Environment Challenge #2: Auto-Generated SDKs with @solana/kit**
-
-What if we could make ANY protocol work automatically? Here's the idea:
-
-1. **Pick any Solana program** (like Jupiter or Drift)
-2. **Fetch its IDL** from the chain
-3. **Use Codama to auto-generate a TypeScript SDK** from that IDL
-4. **Include the SDK in the model's prompt** ("Here's how to interact with this program...")
-5. **Prepend the SDK to whatever code the model writes** (so it actually compiles)
-6. **Run it with @solana/kit** (Codama SDKs only work with kit, not web3.js)
-
-This would be a separate "raw" environment - just Codama + @solana/kit. No manual protocol-specific work needed! Point at a program ID and go. The model sees nice TypeScript functions instead of raw instruction building.
-
-Even better: After collecting successful runs, export them to OpenPipe or similar for fine-tuning. Build first, train later.
 
 ## What Didn't Work (And Why That's Important)
 
@@ -776,60 +568,6 @@ Integrating with Anthropic's MCP to provide:
 - Direct transaction submission tools
 - Protocol documentation access
 
-## Debugging Your Experiments
-
-### 🔍 LangGraph Studio - See Everything
-
-LangGraph Studio is invaluable for debugging your agent's behavior. It shows you the complete input/output for every LLM call, making it easy to spot where things go wrong.
-
-**Setup**:
-
-```bash
-# Add to your .env file
-LANGGRAPH_API_KEY=your_api_key_here
-
-# LangGraph will automatically log all LangChain interactions
-```
-
-**What You'll See**:
-
-- Full message history with token counts
-- Exact tool calls and responses
-- Model reasoning in real-time
-- Where models get stuck or confused
-
-This visibility was crucial for discovering that models were making variable name errors in tool calls but not in code blocks.
-
-### 📊 Metrics and Traces
-
-Every run generates detailed traces in `metrics/` and `traces/`:
-
-- Transaction success/failure patterns
-- Reward progression over time
-- Which programs and instructions were discovered
-- Error frequencies and types
-
-## How to Contribute
-
-### Getting Started
-
-1. **Fork the repo**: [github.com/your-org/solana-gym](https://github.com/your-org/solana-gym)
-2. **Pick a protocol**: Choose one you know well
-3. **Create your environment**: Use our template as a starting point
-4. **Test with multiple models**: Ensure it works across different LLMs
-5. **Submit a PR**: Include example runs and performance metrics
-
-### What Makes a Great Contribution
-
-✅ **Clear, Protocol-Specific Prompts**: Models should understand what they're exploring
-
-✅ **Comprehensive SDK Examples**: Real code that works on mainnet
-
-✅ **Meaningful Reward Shaping**: Incentivize learning the protocol deeply
-
-✅ **Documentation**: Explain why your approach teaches models effectively
-
-✅ **Evaluation Metrics**: Show how different models perform
 
 ## The Bigger Picture: Solving AI Usage of Solana
 
@@ -911,7 +649,7 @@ This project builds on the incredible work of:
 
 ---
 
-_Solana Gym is open source and MIT licensed. We believe the future of blockchain AI should be built in the open._
+_Solana Bench is open source and MIT licensed. We believe the future of blockchain AI evaluation should be built in the open._
 
 **Ready to contribute?** Start with our [Code Loop Explorer example](./code_loop_explorer.py) and build your own protocol-specific environment. The future of blockchain AI evaluation is in your hands.
 
