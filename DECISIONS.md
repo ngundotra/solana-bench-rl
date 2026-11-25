@@ -20,3 +20,6 @@ One line per decision + why. Newest at bottom.
 - 2026-11-25: Fixed `confirm_transaction(..., 30.0)`: the 3rd arg is the *poll interval*, so every tx slept 30 s. Per-tx latency went from ~30 s to <1 s.
 - 2026-11-25: New `--max-output-tokens` (default 8192, 0 = legacy uncapped) after a 57K-token runaway generation ate 44% of smoke spend. The recorded smoke run was uncapped.
 - 2026-11-25: Spend is measured two ways: per-call `usage.cost` from OpenRouter (logged per turn) and the key's total usage (authoritative for STATUS).
+- 2026-11-25: Baseline model switched to `thinkingmachines/inkling-2-mini` (Noah's target for fine-tuning) via OpenRouter, not Tinker: it's live on OpenRouter at $0.075/$0.30 per M, and the existing capped key works with no new account.
+- 2026-11-25: Pinned the OpenRouter provider to DeepInfra (`--provider`), because the same model is served by 7 hosts at different prices and context limits. Fallbacks stay on.
+- 2026-11-25: Inkling runs use a 16K output cap, not 8K, because it's a reasoning model and reasoning tokens count toward `max_tokens`.

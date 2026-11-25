@@ -82,6 +82,7 @@ async def one_rollout(i: int, args) -> dict:
         rec = {"rollout": i, "model": None if args.dry_run else args.model,
                "env": "basic", "max_messages": args.max_messages,
                "max_output_tokens": None if args.dry_run else (args.max_output_tokens or None),
+               "provider_order": args.provider,
                "agent_pubkey": str(env.agent_keypair.pubkey())}
         try:
             if args.dry_run:
@@ -97,7 +98,8 @@ async def one_rollout(i: int, args) -> dict:
                 ex = CodeLoopExplorer(model_name=args.model, run_index=i,
                                       max_messages=args.max_messages, verbose=False,
                                       code_file=CODE_FILE, environment_config="basic",
-                                      max_output_tokens=args.max_output_tokens or None)
+                                      max_output_tokens=args.max_output_tokens or None,
+                                      provider_order=args.provider or None)
                 await ex.run_exploration_loop(env)
                 ex.save_checkpoint()
                 m = ex.metrics
@@ -129,6 +131,8 @@ async def main():
     ap.add_argument("--model", default="google/gemini-2.5-flash")
     ap.add_argument("--max-output-tokens", type=int, default=8192,
                     help="per-call output cap (0 = uncapped, the legacy behaviour)")
+    ap.add_argument("--provider", action="append",
+                    help="OpenRouter provider to prefer (repeatable), e.g. DeepInfra")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--out", default="runs/smoke.jsonl")
     args = ap.parse_args()

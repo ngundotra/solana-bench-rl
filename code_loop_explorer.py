@@ -35,6 +35,7 @@ class CodeLoopExplorer:
         code_file: str = None,
         environment_config: str = None,
         max_output_tokens: int | None = None,
+        provider_order: list[str] | None = None,
     ):
         self.model_name = model_name
         self.run_index = run_index
@@ -59,7 +60,9 @@ class CodeLoopExplorer:
             model=model_name,
             api_key=os.getenv("OPENROUTER_API_KEY"),
             temperature=0.7,
-            extra_body={"usage": {"include": True}},
+            extra_body={"usage": {"include": True},
+                        # Optional OpenRouter provider pin: same model can differ by host/quantization.
+                        **({"provider": {"order": provider_order}} if provider_order else {})},
             max_tokens=max_output_tokens,  # None = legacy (uncapped); caps runaway generations
         )
         
