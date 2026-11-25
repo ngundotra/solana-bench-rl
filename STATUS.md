@@ -1,6 +1,7 @@
 # STATUS
 
 **Phase:** 0 (Recon) ✅ done, ✋ waiting on Noah's review
+**Repo:** [ngundotra/solana-bench-rl](https://github.com/ngundotra/solana-bench-rl) (new repo, not a GitHub fork)
 **Spend to date:** $0 (no paid runs)
 
 ## Done
@@ -8,13 +9,12 @@
 - License: no LICENSE file; intent is MIT (setup.py, blog). Open Q, not blocking
 - Found: score = unique (program, first byte); 47% of Basic points are Memo
 - Found: agent code can call Surfpool cheatcodes (forges state verifiers)
+- Repo home decided: `ngundotra/solana-bench-rl` (new public repo, not a fork; upstream is archived)
 
 ## Blocked
-- No writable repo: ngundotra/solana-gym-env redirects to archived upstream
 - Phase 2 will need a Modal token + baseline model key
 
 ## Next decision for Noah
-- Where the repo lives (new `ngundotra/solana-bench-rl`?)
 - Phase 1 scope: **Basic first** (recommended) or Basic + Swap now?
   Reply "basic" or "swap too"
 
