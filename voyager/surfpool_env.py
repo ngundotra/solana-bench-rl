@@ -56,15 +56,30 @@ async def _surfpool_validator(rpc_url: str, *, backtrace: bool = True):
     )
     logging.info("surfpool [%s] launched", proc.pid)
 
-    try:
-        # Block until Surfpool is actually serving RPC or abort early
+    async def _drain():
+        # Keep reading stdout so the pipe never fills and stalls Surfpool.
         while True:
             line = await proc.stdout.readline()
-            if not line:                       # died before ready
+            if not line:
+                return
+            logging.debug("[surfpool] %s", line.decode(errors="replace").rstrip())
+
+    drain_task = asyncio.create_task(_drain())
+    try:
+        # Block until Surfpool is actually serving RPC (newer Surfpool no longer
+        # prints READY_TOKEN, so poll the RPC instead) or abort early.
+        probe = AsyncClient("http://127.0.0.1:8899")
+        for _ in range(240):
+            if proc.returncode is not None:
                 raise RuntimeError("surfpool exited before becoming ready")
-            logging.debug("[surfpool] %s", line.decode().rstrip())
-            if READY_TOKEN in line:
+            try:
+                await probe.get_latest_blockhash()
                 break
+            except Exception:
+                await asyncio.sleep(0.25)
+        else:
+            raise RuntimeError("surfpool did not become ready within 60s")
+        await probe.close()
         yield proc                             # ── control goes back to caller
     finally:
         if proc.returncode is None:
@@ -78,7 +93,7 @@ async def _surfpool_validator(rpc_url: str, *, backtrace: bool = True):
                 await proc.wait()
             except ProcessLookupError as e:
                 logging.warning("surfpool process already terminated")
-                
+        drain_task.cancel()
         logging.info("surfpool shut down")
 
 class SurfpoolEnv(gym.Env):
@@ -230,7 +245,7 @@ class SurfpoolEnv(gym.Env):
         try:
             logging.info(f"Airdropping SOL to {self.agent_keypair.pubkey()}...")
             airdrop_sig = await self.client.request_airdrop(self.agent_keypair.pubkey(), 2 * 10**9) # 2 SOL
-            await self.client.confirm_transaction(airdrop_sig.value, "confirmed", 30.0)
+            await self.client.confirm_transaction(airdrop_sig.value, "confirmed", sleep_seconds=0.2)  # 3rd arg is poll interval, not a timeout
             logging.info("Airdrop successful.")
         except Exception as e:
             logging.error(f"Airdrop failed: {e}", exc_info=True)
@@ -254,7 +269,7 @@ class SurfpoolEnv(gym.Env):
             sig = await self.client.send_transaction(tx)
             
             # The commitment level for confirmation should be high enough
-            await self.client.confirm_transaction(sig.value, "confirmed", 30.0)
+            await self.client.confirm_transaction(sig.value, "confirmed", sleep_seconds=0.2)  # 3rd arg is poll interval, not a timeout
             
             # Fetch the confirmed transaction
             result = await self.client.get_transaction(sig.value, commitment="confirmed")
@@ -319,7 +334,8 @@ class SurfpoolEnv(gym.Env):
         }
 
     def _get_ordered_instructions(self, tx_result: GetTransactionResp) -> list[dict[str, bytes]]:
-        inner_instructions = {ix.index: ix.instructions for ix in tx_result.value.transaction.meta.inner_instructions}
+        # Only instructions that made CPIs appear here (newer Surfpool omits empty entries).
+        inner_instructions = {ix.index: ix.instructions for ix in (tx_result.value.transaction.meta.inner_instructions or [])}
         message = tx_result.value.transaction.transaction.message
         ordered_instructions = []
         for idx, ix in enumerate(message.instructions):
@@ -332,7 +348,7 @@ class SurfpoolEnv(gym.Env):
                 [{
                     'program_id': message.account_keys[inner_instruction.program_id_index],
                     'data': base58.b58decode(inner_instruction.data),
-                } for inner_instruction in inner_instructions[idx]]
+                } for inner_instruction in inner_instructions.get(idx, [])]
             )
         return ordered_instructions
     

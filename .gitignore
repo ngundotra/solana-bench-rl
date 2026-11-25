@@ -96,3 +96,7 @@ demo_trajectory_skills/
 voyager/skill_runner/code_loop_code.ts
 voyager/skill_runner/code.ts
 voyager/skill_runner/batch_*.ts
+# Phase 1 smoke-run artifacts (local only; curated copies live in runs/)
+metrics/
+ckpt/
+voyager/environments/basic_runtime/code_loop_code.ts
