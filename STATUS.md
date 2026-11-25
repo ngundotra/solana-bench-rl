@@ -1,25 +1,25 @@
 # STATUS
 
-**Phase:** 0 (Recon) ✅ done, ✋ waiting on Noah's review
-**Repo:** [ngundotra/solana-bench-rl](https://github.com/ngundotra/solana-bench-rl) (new repo, not a GitHub fork)
-**Spend to date:** $0 (no paid runs)
+**Phase:** 1 (offline env), smoke test done ✅. PR open for review
+**Repo:** [ngundotra/solana-bench-rl](https://github.com/ngundotra/solana-bench-rl)
+**Spend to date:** **$0.36** of $100 (OpenRouter: Gemini $0.32, Inkling $0.04)
 
 ## Done
-- Mapped loop, actions, obs, reward, every network touch → `docs/DESIGN.md`
-- License: no LICENSE file; intent is MIT (setup.py, blog). Open Q, not blocking
-- Found: score = unique (program, first byte); 47% of Basic points are Memo
-- Found: agent code can call Surfpool cheatcodes (forges state verifiers)
-- Repo home decided: `ngundotra/solana-bench-rl` (new public repo, not a fork; upstream is archived)
+- Phase 0 recon → `docs/DESIGN.md` (PR #1)
+- Env boots on Surfpool 1.8.0; dry run (no LLM) scores 1 Memo pt in ~5 s
+- n=2 baseline, 10 msgs: gemini-2.5-flash **16, 0**; inkling-2-mini **13, 3** ($0.04)
+- Fixed 6 bugs that blocked or slowed runs (deps, config, Surfpool 1.8 compat ×2, 30 s/tx sleep, no-code crash)
+
+## Learned
+- Gemini r1 died on turn 1: a 57K-token runaway generation (7 min, 44% of spend), then 9 turns of apologies, 0 txs. Now capped at 8K output tokens
+- Gemini r0: 4 of 16 pts from Memo (different first letters), 2 free ComputeBudget pts
+- Inkling: 10 of 20 turns had no code block (fences dropped, repeat loops)
 
 ## Blocked
-- Phase 2 will need a Modal token + baseline model key
+- Nothing. Modal token needed only at Phase 2
 
 ## Next decision for Noah
-- Phase 1 scope: **Basic first** (recommended) or Basic + Swap now?
-  Reply "basic" or "swap too"
+- Debug Inkling's missing code blocks (~$0.05) or move on to snapshot? Reply "debug" or "go phase 1"
 
-## Next up (Phase 1)
-1. Fix deps (uv.lock missing solders etc.)
-2. Pinned offline snapshot + seeded env
-3. Sandbox agent code (no egress, RPC allowlist)
-4. Replay test: same txs → same score ×3
+## Next up
+1. Snapshot (offline) + seeded keypair  2. Sandbox agent code  3. Replay test ×3

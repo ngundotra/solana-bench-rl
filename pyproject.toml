@@ -5,12 +5,18 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "base58>=2.1.1",
     "chromadb>=1.0.15",
+    "gymnasium>=1.4.0",
     "javascript>=1!1.2.2",
     "langchain>=0.3.26",
     "langchain-anthropic>=0.3.17",
     "langchain-openai>=0.3.28",
     "openai>=1.93.0",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.4",
     "seaborn>=0.13.2",
     "setuptools>=80.9.0",
+    "solana>=0.42.0",
+    "solders>=0.29.0",
 ]

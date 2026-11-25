@@ -1,0 +1,208 @@
+{
+  "model": "thinkingmachines/inkling-2-mini",
+  "run_index": 1,
+  "run_id": "code_loop_26-11-25_180105_62000c7d",
+  "start_time": "2026-11-25T18:01:05.621412",
+  "environment_config": "basic",
+  "messages": [
+    {
+      "index": 1,
+      "timestamp": "2026-11-25T18:01:05.623982",
+      "duration": 46.827674,
+      "reward": 0,
+      "total_reward": 0,
+      "instructions_discovered": {}
+    },
+    {
+      "index": 2,
+      "timestamp": "2026-11-25T18:01:52.453843",
+      "duration": 1.193036,
+      "reward": 0,
+      "total_reward": 0,
+      "instructions_discovered": {}
+    },
+    {
+      "index": 3,
+      "timestamp": "2026-11-25T18:01:53.649229",
+      "duration": 54.024966,
+      "reward": 0,
+      "total_reward": 0,
+      "instructions_discovered": {}
+    },
+    {
+      "index": 4,
+      "timestamp": "2026-11-25T18:02:47.676947",
+      "duration": 7.572945,
+      "reward": 3,
+      "total_reward": 3,
+      "instructions_discovered": {
+        "ComputeBudget111111111111111111111111111111": [
+          2
+        ],
+        "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr": [
+          72
+        ],
+        "11111111111111111111111111111111": [
+          2
+        ]
+      }
+    },
+    {
+      "index": 5,
+      "timestamp": "2026-11-25T18:02:55.252559",
+      "duration": 26.380769,
+      "reward": 0,
+      "total_reward": 3,
+      "instructions_discovered": {}
+    },
+    {
+      "index": 6,
+      "timestamp": "2026-11-25T18:03:21.636360",
+      "duration": 38.872395,
+      "reward": 0,
+      "total_reward": 3,
+      "instructions_discovered": {}
+    },
+    {
+      "index": 7,
+      "timestamp": "2026-11-25T18:04:00.511233",
+      "duration": 31.641435,
+      "reward": 0,
+      "total_reward": 3,
+      "instructions_discovered": {}
+    },
+    {
+      "index": 8,
+      "timestamp": "2026-11-25T18:04:32.154894",
+      "duration": 11.053488,
+      "reward": 0,
+      "total_reward": 3,
+      "instructions_discovered": {}
+    },
+    {
+      "index": 9,
+      "timestamp": "2026-11-25T18:04:43.209741",
+      "duration": 46.810466,
+      "reward": 0,
+      "total_reward": 3,
+      "instructions_discovered": {}
+    },
+    {
+      "index": 10,
+      "timestamp": "2026-11-25T18:05:30.022923",
+      "duration": 1.887959,
+      "reward": 0,
+      "total_reward": 3,
+      "instructions_discovered": {}
+    }
+  ],
+  "cumulative_rewards": [
+    0,
+    0,
+    0,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ],
+  "programs_discovered": {
+    "ComputeBudget111111111111111111111111111111": 4,
+    "11111111111111111111111111111111": 4,
+    "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr": 4
+  },
+  "instructions_by_program": {
+    "ComputeBudget111111111111111111111111111111": [
+      2
+    ],
+    "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr": [
+      72
+    ],
+    "11111111111111111111111111111111": [
+      2
+    ]
+  },
+  "code_blocks_extracted": [
+    {
+      "message_index": 4,
+      "num_blocks": 1,
+      "success": true,
+      "reward": 3
+    }
+  ],
+  "errors": [],
+  "llm_usage": [
+    {
+      "message_index": 1,
+      "prompt_tokens": 2079,
+      "completion_tokens": 16384,
+      "reasoning_tokens": 7761,
+      "cost": 0.00502041375
+    },
+    {
+      "message_index": 2,
+      "prompt_tokens": 8486,
+      "completion_tokens": 104,
+      "reasoning_tokens": 52,
+      "cost": 0.0005393223
+    },
+    {
+      "message_index": 3,
+      "prompt_tokens": 8533,
+      "completion_tokens": 16384,
+      "reasoning_tokens": 10029,
+      "cost": 0.00499781205
+    },
+    {
+      "message_index": 4,
+      "prompt_tokens": 12468,
+      "completion_tokens": 582,
+      "reasoning_tokens": 125,
+      "cost": 0.0005929902
+    },
+    {
+      "message_index": 5,
+      "prompt_tokens": 14227,
+      "completion_tokens": 5184,
+      "reasoning_tokens": 5100,
+      "cost": 0.00185849235
+    },
+    {
+      "message_index": 6,
+      "prompt_tokens": 14300,
+      "completion_tokens": 8052,
+      "reasoning_tokens": 8021,
+      "cost": 0.0026092638
+    },
+    {
+      "message_index": 7,
+      "prompt_tokens": 14357,
+      "completion_tokens": 7465,
+      "reasoning_tokens": 7440,
+      "cost": 0.00243535545
+    },
+    {
+      "message_index": 8,
+      "prompt_tokens": 14408,
+      "completion_tokens": 2474,
+      "reasoning_tokens": 2449,
+      "cost": 0.0009530136
+    },
+    {
+      "message_index": 9,
+      "prompt_tokens": 14459,
+      "completion_tokens": 16384,
+      "reasoning_tokens": 7011,
+      "cost": 0.00508426875
+    },
+    {
+      "message_index": 10,
+      "prompt_tokens": 20783,
+      "completion_tokens": 207,
+      "reasoning_tokens": 182,
+      "cost": 0.00074925675
+    }
+  ]
+}

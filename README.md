@@ -113,6 +113,12 @@ export MAX_MESSAGES=50
 export ENVIRONMENT_CONFIG="basic"
 uv run python code_loop_explorer.py
 
+# Phase 1 smoke test: N sequential rollouts, one fresh Surfnet each, JSONL out
+# (dry run first: no LLM call, proves Surfpool + Bun + scoring work)
+(cd voyager/environments/basic_runtime && bun install --frozen-lockfile)
+uv run python scripts/smoke_rollouts.py --dry-run --n 1
+uv run python scripts/smoke_rollouts.py --n 2 --max-messages 10   # see runs/phase1-smoke/
+
 # Batch comparison of multiple models
 # To switch environments between "basic" and "swap"
 # you must edit this file

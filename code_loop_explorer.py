@@ -33,7 +33,9 @@ class CodeLoopExplorer:
         resume: bool = False,
         verbose: bool = True,
         code_file: str = None,
-        environment_config: str = None
+        environment_config: str = None,
+        max_output_tokens: int | None = None,
+        provider_order: list[str] | None = None,
     ):
         self.model_name = model_name
         self.run_index = run_index
@@ -58,6 +60,10 @@ class CodeLoopExplorer:
             model=model_name,
             api_key=os.getenv("OPENROUTER_API_KEY"),
             temperature=0.7,
+            extra_body={"usage": {"include": True},
+                        # Optional OpenRouter provider pin: same model can differ by host/quantization.
+                        **({"provider": {"order": provider_order}} if provider_order else {})},
+            max_tokens=max_output_tokens,  # None = legacy (uncapped); caps runaway generations
         )
         
         # Initialize skill manager
@@ -86,20 +92,21 @@ class CodeLoopExplorer:
             "instructions_by_program": {},  # Track unique instructions per program
             "code_blocks_extracted": [],
             "errors": [],
+            "llm_usage": [],  # per-call OpenRouter usage (tokens, cost in USD)
         }
         
         self.message_count = 0
         self.messages = []  # List of LangChain message objects
         
     def load_environment_config(self, config_path: str):
-        """Load environment configuration from JSON file."""
-        try:
-            with open(config_path, 'r') as f:
-                self.env_config = json.load(f)
-                logging.info(f"Loaded environment config: {self.env_config['name']}")
-        except Exception as e:
-            logging.error(f"Failed to load environment config: {e}")
-            self.env_config = None
+        """Load environment configuration from a JSON path or a short name like "basic"."""
+        if not config_path.endswith(".json") and not os.path.exists(config_path):
+            config_path = f"voyager/environments/{config_path}_env.json"
+        # Fail loudly: a silently missing config used to crash later with an unbound system_prompt.
+        with open(config_path, 'r') as f:
+            self.env_config = json.load(f)
+        self.environment_config_path = config_path
+        logging.info(f"Loaded environment config: {self.env_config['name']}")
         
     def extract_code_blocks(self, message_content: str) -> List[str]:
         """
@@ -198,6 +205,8 @@ Remember to use ```typescript code blocks for your transaction code.
         while self.message_count < self.max_messages:
             self.message_count += 1
             message_start_time = datetime.now()
+            reward = 0
+            instructions_discovered = {}  # was unbound on turns with no code block
             
             try:
                 # Get agent response using LangChain
@@ -206,6 +215,14 @@ Remember to use ```typescript code blocks for your transaction code.
                 
                 # Add AI message to conversation
                 self.messages.append(response)
+                usage = (response.response_metadata or {}).get("token_usage") or {}
+                self.metrics['llm_usage'].append({
+                    'message_index': self.message_count,
+                    'prompt_tokens': usage.get('prompt_tokens'),
+                    'completion_tokens': usage.get('completion_tokens'),
+                    'reasoning_tokens': (usage.get('completion_tokens_details') or {}).get('reasoning_tokens'),
+                    'cost': usage.get('cost'),
+                })
                 
                 if self.verbose:
                     logging.info(f"\n{'='*80}")
@@ -241,7 +258,7 @@ Remember to use ```typescript code blocks for your transaction code.
                         str(env.agent_keypair.pubkey()),
                         blockhash,
                         self.code_file,
-                        self.env_config.get("timeout", 30000)
+                        (self.env_config or {}).get("timeout", 30000)
                     )
                     logging.info(f"📦 Execution result: success={result.get('success', False)}, has_tx={bool(result.get('serialized_tx'))}")
 
